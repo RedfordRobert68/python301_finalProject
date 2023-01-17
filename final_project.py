@@ -1,10 +1,22 @@
 import os
-
+import re
 
 class Bank:
 
-    def __init__(self, opening_balance = 100.00):
-        self.balance = opening_balance
+    def __init__(self):
+        self.balance = 0
+        # opening_balance = 100.00
+        # with open(f"{self.user_name}.txt", "r") as transactions:
+        #     transactions = transactions.readlines()
+
+        # for transaction in transactions:
+        #     print(transaction.rstrip())
+        
+        # print(type(transactions))
+        # balance = 0
+
+    # def newBalance(self):
+    #     self.new_balance = self.balance + self.opening_balance
 
     def userName(self):
         self.user_name = input("Please enter your username: ")
@@ -17,12 +29,25 @@ class Bank:
     
     # View Transactions
     def Transaction(self):
-        # print("This is a transaction.")
         with open(f"{self.user_name}.txt", "r") as transactions:
             transactions = transactions.readlines()
+        # print(str(transactions))
 
         for transaction in transactions:
             print(transaction.rstrip())
+            # print(transaction)
+            # try:
+            #     trans = re.sub(r'[^[0-9.-]', '', transaction)
+            #     trans = int(float(trans))
+            #     print(trans)
+            #     # print(type(trans))
+            #     # print(type(transaction))
+            #     # print(transaction)
+            # except:
+            #     print("")
+        print(f"_____________________________________\nBalance:\t\t{self.balance}")
+        self.balance = int(self.balance)
+       
 
     # Make Withdrawal
     def Withdrawal(self):
@@ -31,16 +56,19 @@ class Bank:
         try:
             withdrawal = float(withdrawal)
             with open(f"{self.user_name}.txt", "a") as file:
-                file.write(f"\nwithdrawal: \t\t-{withdrawal}")
-                print(f"\n${withdrawal} was withdrawn.")
+      
+                if withdrawal > 0 and withdrawal <= self.balance:
+                    self.balance = self.balance - withdrawal
+                    file.write(f"\nwithdrawal: \t\t-{withdrawal}")
+                    print(f"\n${withdrawal} was withdrawn.")
+                elif withdrawal > self.balance:
+                    print("Your withdrawal request exceeds your balance. Please try again.")
+                    pass
+                elif withdrawal < 0:
+                    print("You must enter an amount greater than zero")
+
         except ValueError:
             print("\nPlease use numbers and decimal only.")
-
-        if withdrawal:
-            if withdrawal > 0:
-                self.balance = self.balance - withdrawal
-            else:
-                print("You must enter an amount greater than zero")
 
     # Make Deposit
     def Deposit(self):
@@ -54,6 +82,8 @@ class Bank:
 
             if deposit > 0:
                 self.balance = self.balance + deposit
+            elif(deposit == "+" or deposit == "-"):
+                print("Invalid entry!")
             
             else:
                 print("You must enter an amount greater than zero")
@@ -63,8 +93,14 @@ class Bank:
 
     # View Balance
     def Balance(self):
-        print(f"Balance:\t\t{self.balance}")
+        print(f"\nBalance:\t\t{self.balance}")
+        # print(type(self.balance))
 
+
+    # Logoout
+    def Logout(self):
+        quit()
+        
 
 account = Bank()
 
@@ -80,7 +116,9 @@ def options():
         elif account_option.lower() == "w":
             account.Withdrawal()
         elif account_option.lower() == "l":
-            quit()
+            account.Logout()
+        else:
+            print("\nYour selection is invalid. Try again.")
 
 def login():
     while True:
