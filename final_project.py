@@ -96,7 +96,7 @@ class Bank:
     def Logout(self):
         with open(f"{self.user_name}.txt", "a") as file:
             file.write(f"\nBalance: \t\t{round(self.balance, 2)}")
-        
+        quit()
 
 
 account = Bank()
@@ -114,7 +114,6 @@ def options():
             account.Withdrawal()
         elif account_option.lower() == "l":
             account.Logout()
-            break
         else:
             print("\nYour selection is invalid. Try again.")
 
