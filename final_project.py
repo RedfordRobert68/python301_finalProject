@@ -3,20 +3,10 @@ import re
 
 class Bank:
 
-    def __init__(self):
-        self.balance = 0
-        # opening_balance = 100.00
-        # with open(f"{self.user_name}.txt", "r") as transactions:
-        #     transactions = transactions.readlines()
+    user_name = ""
 
-        # for transaction in transactions:
-        #     print(transaction.rstrip())
-        
-        # print(type(transactions))
-        # balance = 0
-
-    # def newBalance(self):
-    #     self.new_balance = self.balance + self.opening_balance
+    def __init__(self, opening_balance = 0):
+        self.balance = opening_balance
 
     def userName(self):
         self.user_name = input("Please enter your username: ")
@@ -29,29 +19,24 @@ class Bank:
     
     # View Transactions
     def Transaction(self):
+        # print("This is a transaction.")
         with open(f"{self.user_name}.txt", "r") as transactions:
             transactions = transactions.readlines()
-        # print(str(transactions))
 
         for transaction in transactions:
-            print(transaction.rstrip())
-            # print(transaction)
-            # try:
-            #     trans = re.sub(r'[^[0-9.-]', '', transaction)
-            #     trans = int(float(trans))
-            #     print(trans)
-            #     # print(type(trans))
-            #     # print(type(transaction))
-            #     # print(transaction)
-            # except:
-            #     print("")
-        print(f"_____________________________________\nBalance:\t\t{self.balance}")
-        self.balance = int(self.balance)
-       
+
+            # Remove Balance from being a transaction
+            if transaction.find("Balance") != -1:
+                pass
+            else:
+                print(transaction.rstrip())
+
+        # Show balance after transactions
+        print(f"___________________________________\nBalance:\t\t{round(self.balance, 2)}")
 
     # Make Withdrawal
     def Withdrawal(self):
-        # print("This is a withdrawal.")
+       # print("This is a withdrawal.")
         withdrawal = input("How much will you be withdrawing today? ")
         try:
             withdrawal = float(withdrawal)
@@ -59,13 +44,13 @@ class Bank:
       
                 if withdrawal > 0 and withdrawal <= self.balance:
                     self.balance = self.balance - withdrawal
-                    file.write(f"\nwithdrawal: \t\t-{withdrawal}")
+                    file.write(f"\nwithdrawal: \t\t-{round(withdrawal, 2)}")
                     print(f"\n${withdrawal} was withdrawn.")
-                elif withdrawal > self.balance:
-                    print("Your withdrawal request exceeds your balance. Please try again.")
+                elif withdrawal > 0:
+                    print("\nYour withdrawal request exceeds your balance. Please try again.")
                     pass
                 elif withdrawal < 0:
-                    print("You must enter an amount greater than zero")
+                    print("\nYou must enter an amount greater than zero")
 
         except ValueError:
             print("\nPlease use numbers and decimal only.")
@@ -77,30 +62,42 @@ class Bank:
         try:
             deposit = float(deposit)
             with open(f"{self.user_name}.txt", "a") as file:
-                file.write(f"\nDeposit: \t\t+{deposit}")
-                print(f"\n${deposit} was deposited.")
 
-            if deposit > 0:
-                self.balance = self.balance + deposit
-            elif(deposit == "+" or deposit == "-"):
-                print("Invalid entry!")
-            
-            else:
-                print("You must enter an amount greater than zero")
+                if deposit > 0:
+                    self.balance = self.balance + deposit
+                    file.write(f"\nDeposit: \t\t+{round(deposit, 2)}")
+                    print(f"\n${deposit} was deposited.")
+                
+                else:
+                    print("\nYou must enter an amount greater than zero!")
+                    pass
 
         except ValueError:
             print("\nPlease use numbers and decimal only.")
 
     # View Balance
     def Balance(self):
-        print(f"\nBalance:\t\t{self.balance}")
-        # print(type(self.balance))
+        print(f"\nBalance:\t\t{round(self.balance, 2)}")
 
+        # with open(f"{self.user_name}.txt", "a") as file:
+        #     file.write(f"\nBalance: \t\t{round(self.balance, 2)}")
 
-    # Logoout
+    # Capture the balance of returning customers
+    def returningBalance(self):
+        with open(f"{self.user_name}.txt", "r") as self.balance:
+            self.balance = self.balance.readlines()[-1]
+            self.balance = re.sub("[^0-9.]", " ", self.balance)
+            self.balance = float(self.balance)
+            # print(type(self.balance))
+            # print(self.balance)
+            # print(f"{round(balance, 2)}")
+
+    # Logout - Write balance to text file for future use when user returns
     def Logout(self):
+        with open(f"{self.user_name}.txt", "a") as file:
+            file.write(f"\nBalance: \t\t{round(self.balance, 2)}")
         quit()
-        
+
 
 account = Bank()
 
@@ -128,19 +125,24 @@ def login():
         if(account.user_name.lower() == ""):
             pass
 
-        # Welcome message
+         # Welcome message for returning users
         elif(os.path.exists(f"{account.user_name}.txt")):
-            print(f"\nWelcome {account.user_name},")
+            print(f"\nWelcome {account.user_name}.")
+
+            # This is where the returning balance code belongs
+            account.returningBalance()
+
+
+            # Show user options
             options()
 
-        # New users start with $100.00
+        # New users start with $0
         else:
             with open(f'{account.user_name}.txt', 'w') as file:
                 file.write(f"\nOpening balance: \t {account.balance}")
-                # with open(f"{self.user_name}.txt", "r") as file:
-                #     balance = file.read()
-                # print(balance)
             print(f"\nWelcome {account.user_name},")
+
+            # Show user options
             options()
 login()
 
